@@ -1,1 +1,1 @@
-# laravel_life365
+# Life365Laravel
