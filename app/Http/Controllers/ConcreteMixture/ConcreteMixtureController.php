@@ -23,51 +23,57 @@ class ConcreteMixtureController extends Controller
     public function index(Request $request)
     {
         $project = $this->getProject();
-
+        
         $saved_defaults = json_decode($project->inputs);
-
-        if (session('project')) {
-            $inputJSON = session('project');
-        } else {
-            $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
-        }
-
-        $inputJSON = Helper::exposureLocaleCorrection($inputJSON);
-
-        $inputJSON = Helper::listenerASTMCorrection($inputJSON);
-
-        if (isset($inputJSON['project']['projectData']['lccResults'])) {
-            unset($inputJSON['project']['projectData']['lccResults']);
-        }
-
+         
+          if(session('project')) {
+            $inputJSON=session('project'); 
+          }
+          else{
+          $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+          }
+         
+            $inputJSON = Helper::exposureLocaleCorrection($inputJSON);
+            
+            $inputJSON = Helper::listenerASTMCorrection($inputJSON);
+            
+            if (isset($inputJSON['project']['projectData']['lccResults'])) {
+                unset($inputJSON['project']['projectData']['lccResults']);
+            }
+            
         // 
         $inputJSON = Helper::prePageDataCalc($inputJSON, 'serv');
-
-        $privious = $inputJSON['project']['projectData']['alts']['alt'];
-        if (session('alt')) {
-            $session = session('alt');
-            $inputJSON['project']['projectData']['alts']['alt'] = session('alt');
+        
+        // $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']['initialEfficiency']=1;
+        // $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']['ageAtFailure']=20;
+        $privious=$inputJSON['project']['projectData']['alts']['alt'];
+        if(session('alt')){
+            $session=session('alt');
+            $inputJSON['project']['projectData']['alts']['alt']=session('alt');
         }
-
-        // CODE TO FIX - WHY IS THIS ONLY ALT 0
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign'] = $privious['0']['alternative']['concreteMixDesign'];
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] * 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] = $session['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] ?? '0.0' * 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag'] = $session['0']['alternative']['concreteMixDesign']['percentSlag'] ?? '0.0' * 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume'] = $session['0']['alternative']['concreteMixDesign']['percentSilicaFume'] ?? '0.0' * 100;
-
-        // CODE TO FX - WHY IS THIS ONLY FOR THE SECOND ALT? WHAT IF THERE ARE LESS THAN 2 ALTS? THIS WILL CRASH
-        if (isset($inputJSON['project']['projectData']['alts']['alt']['1'])) {
-
-            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume'] = $session['1']['alternative']['concreteMixDesign']['percentSilicaFume'] ?? '0.0' * 100;
-            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign'] = $privious['1']['alternative']['concreteMixDesign'];
-            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] * 100;
-            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] = $session['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] ?? '0.0' * 100;
-            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag'] = $session['1']['alternative']['concreteMixDesign']['percentSlag'] ?? '0.0' * 100;
+        
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']=$privious['0']['alternative']['concreteMixDesign'];
+       
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']*100;
+       
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$session['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']??'0.0'*100;
+        
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag']=$session['0']['alternative']['concreteMixDesign']['percentSlag']??'0.0'*100;
+        
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume']=$session['0']['alternative']['concreteMixDesign']['percentSilicaFume']??'0.0'*100;
+        if(isset($inputJSON['project']['projectData']['alts']['alt']['1'])){
+            
+            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume']=$session['1']['alternative']['concreteMixDesign']['percentSilicaFume']??'0.0'*100;
+            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']=$privious['1']['alternative']['concreteMixDesign'];
+            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']*100;
+            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$session['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']??'0.0'*100;
+            $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag']=$session['1']['alternative']['concreteMixDesign']['percentSlag']??'0.0'*100;
+        
         }
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['inhibitor'] = $privious['1']['alternative']['concreteMixDesign']['inhibitor'];
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['inhibitor'] = $privious['1']['alternative']['concreteMixDesign']['inhibitor'];
-
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['inhibitor']=$privious['1']['alternative']['concreteMixDesign']['inhibitor'];
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['inhibitor']=$privious['1']['alternative']['concreteMixDesign']['inhibitor'];
+        // $inputJSON['project']['projectData']['alts']['alt']=$privious;
+       
         $colors = [];
         array_push($colors, $saved_defaults->base_alt_color, $saved_defaults->alt1_color, $saved_defaults->alt2_color, $saved_defaults->alt3_color, $saved_defaults->alt4_color, $saved_defaults->alt5_color);
         $helping_tips = HelpTip::where('category', 'mixture')->pluck('content', 'slug');
@@ -81,24 +87,105 @@ class ConcreteMixtureController extends Controller
             'barrierTypes' => Config::get('defaults.barrier_types'),
             //Colors
             'colors' => $colors,
-            'helping_tips' => $helping_tips,
+            'helping_tips'=>$helping_tips,
         ]);
     }
+    // public function index(Request $request)
+    // {
+    //     $project = $this->getProject();
+    //     $saved_defaults = json_decode($project->inputs);
+        
+    //     if(session('project')) {
+    //         $inputJSON=session('project');
+             
+    //     }else{
+    //       $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+    //     }
+    //               $inputJSON = Helper::exposureLocaleCorrection($inputJSON);
+            
+    //         $inputJSON = Helper::listenerASTMCorrection($inputJSON);
+            
+    //         if (isset($inputJSON['project']['projectData']['lccResults'])) {
+    //             unset($inputJSON['project']['projectData']['lccResults']);
+    //         }
+            
+    //     // 
+    //     $inputJSON = Helper::prePageDataCalc($inputJSON, 'serv');
+        
+    //     // $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']['initialEfficiency']=1;
+    //     // $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']['ageAtFailure']=20;
+    //     $privious=$inputJSON['project']['projectData']['alts']['alt'];
+    //     if(session('alt')){
+    //         $session=session('alt');
+    //         $inputJSON['project']['projectData']['alts']['alt']=session('alt');
+    //     }
+        
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']=$privious['0']['alternative']['concreteMixDesign'];
+       
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']*100;
+       
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$session['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']??'0.0'*100;
+        
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag']=$session['0']['alternative']['concreteMixDesign']['percentSlag']??'0.0'*100;
+        
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume']=$session['0']['alternative']['concreteMixDesign']['percentSilicaFume']??'0.0'*100;
+    //     if(isset($inputJSON['project']['projectData']['alts']['alt']['1'])){
+            
+    //         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume']=$session['1']['alternative']['concreteMixDesign']['percentSilicaFume']??'0.0'*100;
+    //         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']=$privious['1']['alternative']['concreteMixDesign'];
+    //         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']*100;
+    //         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$session['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']??'0.0'*100;
+    //         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag']=$session['1']['alternative']['concreteMixDesign']['percentSlag']??'0.0'*100;
+        
+    //     }
+    //     $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['inhibitor']=$privious['1']['alternative']['concreteMixDesign']['inhibitor'];
+    //     $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['inhibitor']=$privious['1']['alternative']['concreteMixDesign']['inhibitor'];
+    //     // $inputJSON['project']['projectData']['alts']['alt']=$privious;
+            
+        
+    //     $colors = [];
+    //     array_push($colors, $saved_defaults->base_alt_color, $saved_defaults->alt1_color, $saved_defaults->alt2_color, $saved_defaults->alt3_color, $saved_defaults->alt4_color, $saved_defaults->alt5_color);
+    //     $helping_tips = HelpTip::where('category', 'mixture')->pluck('content', 'slug');
+    //     //Get Project JSON
+    //     return Inertia::render('ConcreteMixture/ConcreteMixture', [
+    //         'isProjectScreen' => true,
+    //         'projectData' => $inputJSON,
+    //         'serviceLifeResults' => json_decode(gzdecode(base64_decode($inputJSON['project']['projectData']['serviceLifeResults']))),
+    //         "rebarSteelTypes" => Config::get('defaults.rebar_steel_types'),
+    //         'inhibitors' => Config::get('defaults.inhibitors'),
+    //         'barrierTypes' => Config::get('defaults.barrier_types'),
+    //         //Colors
+    //         'colors' => $colors,
+    //         'helping_tips'=>$helping_tips,
+    //     ]);
+    // }
 
     public function exportSLReport(Request $request)
     {
         $project = $this->getProject();
-
+        
         $saved_defaults = json_decode($project->inputs);
         if (session('project')) {
-            $inputJSON = session('project');
-        } else {
-            $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
-        }
-
+            $inputJSON=session('project'); 
+            
+          }else{
+          $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+          }
+        // $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+        
+        // inputJSONSLRslab
+        // inputJSONSLRsquare
+        // inputJSONSLRcircle
+        // $inputJSON =Cache::remember('inputJSONSLRslab', 24*60*60, function() use ($inputJSON) {
+        
         $inputJSON = Helper::exposureLocaleCorrection($inputJSON);
+
         $inputJSON = Helper::listenerASTMCorrection($inputJSON);
+
         $inputJSON = Helper::prePageDataCalc($inputJSON, 'serv');
+
+    // return $inputJSON;
+    // });
 
         $colors = [];
         array_push($colors, $saved_defaults->base_alt_color, $saved_defaults->alt1_color, $saved_defaults->alt2_color, $saved_defaults->alt3_color, $saved_defaults->alt4_color, $saved_defaults->alt5_color);
@@ -129,39 +216,37 @@ class ConcreteMixtureController extends Controller
         $project = null;
 
         if ($user) {
-            $project = UserProject::where('unique_id', session('projectID'))->where('user_id', $user->id)->first();
+            $project = UserProject::where('unique_id', session('projectID'))->where('user_id',$user->id)->first();
+           
+            // dd(json_decode(json_encode(json_decode($project->details)), true));
         }
 
         if (!$project) {
             $project = Project::where('unique_id', session('projectID'))->first();
+
         }
         return $project;
     }
 
     public function computeServiceLife(Request $request)
-    {
+    {  
         $inputJSON = $this->prepareJSON($request->all());
-
-        // CODE TO FIX - THIS NEEDS TO BE FOR WHATEVER IS IN THE ALTS ARRAY; E.G., USE THIS
-        // for ($i = 0; $i < sizeof($inputJSON['project']['projectData']['alts']['alt']); $i++) {
-        //     $inputJSON['project']['projectData']['alts']['alt'][$i]['alternative']['concreteMixDesign']['detailedBarrier']['initialEfficiency'] = 1;
-        // }
-        // CURRENT CODE BELOW WILL CRASH IF THERE ARE LESS THAN 2 ALTS
-
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume'] / 100;
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['inhibitor'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['inhibitor'];
+        
+        // dd($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']);
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['rebarType']['percentOfTotal']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentClassFFlyAsh']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentClassFFlyAsh']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSlag']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSlag']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['percentSilicaFume']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['percentSilicaFume']/100;
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['inhibitor']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['inhibitor'];
         // dd($inputJSON);
-        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier'] = $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier'];
-        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['detailedBarrier'] = $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['detailedBarrier'];
-
-        // For the first 'alt'
+        $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']=$inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier'];
+        $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['detailedBarrier']=$inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['detailedBarrier'];
+        
+       // For the first 'alt'
         $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['dRef'] = floatval($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['dRef']);
         $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['m'] = floatval($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['m']);
         $inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['hydration'] = floatval($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['hydration']);
@@ -175,41 +260,48 @@ class ConcreteMixtureController extends Controller
         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['ct'] = floatval($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['ct']);
         $inputJSON['project']['projectData']['alts']['alt']['1']['alternative']['concreteMixDesign']['propagationInYears'] = floatval($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['propagationInYears']);
 
+
+        // dd($inputJSON['project']['projectData']['alts']['alt']['0']['alternative']['concreteMixDesign']['detailedBarrier']);
+        
         $runPostPageDataSave = Helper::postPageDataSave($inputJSON);
-
+        
         if ($runPostPageDataSave) {
-
-            if (is_array($request->intendedUrl)) {
-
-                return Redirect::route($request->intendedUrl[0], $request->intendedUrl[1]);
-            }
-
-            return Redirect::route($request->intendedUrl ?: 'concrete-mixtures');
+                      
+            if(is_array($request->intendedUrl)){
+               
+                return Redirect::route($request->intendedUrl[0],$request->intendedUrl[1]);
+              }
+              
+		    //return response()->json(['message' => 'Project data saved.']);
+            //dd($request->intendedUrl);
+            return Redirect::route($request->intendedUrl?:'concrete-mixtures');
         } else {
-
+           
             return Redirect::route('set-project')->with('error', 'Something went wrong!');
         }
     }
 
     public function prepareJSON($inputData)
     {
+        // dd($inputData['alternatives']);
         $project = $this->getProject();
         if (session('project')) {
-            $inputJSON = session('project');
-        } else {
-            $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
-        }
+            $inputJSON=session('project');
+          }else{
+          $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+          }
+       
 
         $tempJSON = $inputJSON['project']['projectData'];
-
+        
         $tempJSON['alts']['alt'] = $inputData['alternatives'];
-        Session::put('alt', $inputData['alternatives']);
+        Session::put('alt',$inputData['alternatives']);
         if (session('uncertainty')) {
-
+            
             $tempJSON['uncertainty'] = session('uncertainty');
             $tempJSON['uncertainty']['useUncertainty'] = $inputData['useUncertainty'];
         } else {
-
+            //dd($inputData['useUncertainty']);
             $tempJSON['uncertainty']['useUncertainty'] = $inputData['useUncertainty'];
             $tempJSON['uncertainty']['useDefaults'] = $inputData['useUncertaintyDefaults'];
 
@@ -220,19 +312,19 @@ class ConcreteMixtureController extends Controller
             $tempJSON['uncertainty']['covCover'] = $inputData['covCover'];
         }
         $inputJSON['project']['projectData'] = $tempJSON;
-        Session::put('project', $inputJSON);
+        Session::put('project',$inputJSON);
         return  $inputJSON;
     }
 
     public function updateUncertaintyForCurrentCalculation(Request $request)
     {
         $requestData = $request->all();
-
-        $requestData['uncertainty']['useUncertainty'] = true;
+       
+        $requestData['uncertainty']['useUncertainty']= true;
         //dd($requestData['uncertainty']);
-        Session::put('uncertainty', $requestData['uncertainty']);
+        Session::put('uncertainty',$requestData['uncertainty']);
         //dd(session('username'));
         //dd(session(['uncertainty', $request->uncertainty]));
-
+        
     }
 }

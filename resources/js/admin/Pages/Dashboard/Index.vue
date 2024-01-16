@@ -1,8 +1,6 @@
-<!-- DISCARD? What is this panel? appears to show totalUsersCount etc but not sure we use <it-->
 <template>
   <div id="home">
-    <div
-      class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-5 mb-5">
+    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-5 mb-5">
       <h1 class="font-semibold text-2xl">Dashboard</h1>
       <div class="flex">
         <!-- breadcrumb -->
@@ -67,6 +65,20 @@
         </inertia-link>
       </div>
     </div>
+    <!-- <div class="flex flex-wrap -mx-3">
+      <div class="w-full xl:w-1/2 px-3">
+        <p class="text-xl font-semibold mb-4">Users Statistics</p>
+        <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0">
+          <Chart type="line" title="Users yearly chart" :labels="userStatistics.labels" :datasets="userStatistics.datasets" />
+        </div>
+      </div>
+      <div class="w-full xl:w-1/2 px-3">
+        <p class="text-xl font-semibold mb-4">Enquiries Statistics</p>
+        <div class="w-full bg-white border rounded-lg p-4 mb-8 xl:mb-0">
+          <Chart type="bar" title="Enquiries yearly chart" :labels="enquiryStatistics.labels" :datasets="enquiryStatistics.datasets" />
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 <script>

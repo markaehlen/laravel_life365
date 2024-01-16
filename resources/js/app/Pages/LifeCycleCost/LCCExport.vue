@@ -1,6 +1,6 @@
 <template>
   <div id="locations">
-    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-1 mb-5">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-1 mb-5">
       <h3 class="font-semibold">LCC Report Preview</h3>
       <button class="btn-indigo-small ml-auto mobile-back-btn" @click="generateReport()">Print Report</button>
     </div>

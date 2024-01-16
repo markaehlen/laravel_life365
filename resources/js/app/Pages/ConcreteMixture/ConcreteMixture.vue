@@ -1,11 +1,25 @@
 <template>
   <div id="locations">
-    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
+    <ValidationObserver ref="form">
+    <form @submit.prevent="store">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
       <h1 class="font-semibold text-2xl">Concrete Mixtures</h1>
+      <div class="flex">
+              <!-- <button class="btn-indigo-flat mr-2"  @click="back()">Back</button> -->
+              <inertia-link :href="route('set-exposure')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+
+              <!-- <inertia-link :href="route('set-exposure')" class="btn-indigo-flat mr-2" id="back"> Back </inertia-link> -->
+              <!-- <inertia-link class="btn-indigo-flat mr-2" :href="route('service-life-report')">
+                <span>Next</span>
+              </inertia-link> -->
+              <!-- <inertia-link class="btn-indigo-flat" :href="route('individual-cost')" id="next">
+                <span>Next</span>
+              </inertia-link> -->
+              <button class="btn-indigo-flat mr-2"  @click="next()">Next</button>
+      </div>
     </div>
     <div class="bg-white overflow-hidden">
-      <ValidationObserver ref="form">
-        <form @submit.prevent="store">
+      
           
           <input type="hidden" id="navigateApplicationTo" name="navigateApplicationTo" class="form-control" v-model="form.intendedUrl" />
           <div class="py-1 px-2.5 flex flex-wrap justify-center items-center">
@@ -28,17 +42,7 @@
           </div>
           <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
             <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Select Name to edit properties</h3>
-            <div class="flex">
-              <button class="btn-indigo-flat mr-2"  @click="back()">Back</button>
-              <!-- <inertia-link :href="route('set-exposure')" class="btn-indigo-flat mr-2" id="back"> Back </inertia-link> -->
-              <!-- <inertia-link class="btn-indigo-flat mr-2" :href="route('service-life-report')">
-                <span>Next</span>
-              </inertia-link> -->
-              <!-- <inertia-link class="btn-indigo-flat" :href="route('individual-cost')" id="next">
-                <span>Next</span>
-              </inertia-link> -->
-              <button class="mx-2 btn-indigo-small mobile-back-btn"  @click="next()">Next</button>
-            </div>
+            
           </div>
           <div class="text-sm flex w-full flex-wrap">
             <div class="overflow-x-auto w-full">
@@ -243,7 +247,7 @@
           <div v-if="visibleGraph == 'init-variation' && form.useUncertainty && !needToCompute && !needToRegenerateGraphs" class="p-1 -mr-5 -mb-2 flex flex-wrap w-full">
             <Chart class="chart2" :stacked="true" :apRatio="$page.props.isMobile? 0.75 : 1.5" :key="uuid2" type="bar" :xLabel="'Alternatives'" :yLabel="``" title="Service Life" :labels="InitVariationX()" :datasets="InitVariationY()" />
           </div>
-          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+          <div class="flex w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
             <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
             <div class="flex">
               <!-- <inertia-link :href="route('set-exposure')" class="btn-indigo-flat mr-2"> Back </inertia-link> -->
@@ -252,14 +256,15 @@
                 <span>Next</span>
               </inertia-link> -->
               <!-- <inertia-link class="btn-indigo-flat" :href="route('individual-cost')"> -->
-                <button class="mx-2 btn-indigo-small mobile-back-btn"  @click="next()">Next</button>
+                <button class="btn-indigo-flat mr-2"  @click="next()">Next</button>
                 <!-- <span>Next</span>
               </inertia-link> -->
             </div>
           </div>
-        </form>
-      </ValidationObserver>
+        
     </div>
+    </form>
+    </ValidationObserver>
   </div>
 </template>
 

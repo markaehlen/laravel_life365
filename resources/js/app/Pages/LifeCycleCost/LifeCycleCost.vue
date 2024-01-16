@@ -1,26 +1,24 @@
 <template>
   <div id="locations">
-    <div
-      class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
-      <h1 class="font-semibold text-2xl">Life-Cycle Cost</h1>
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
+      <h1 class="font-semibold text-2xl">Life-Cycle-Cost</h1>
+      <div class="flex">
+          <inertia-link :href="route('individual-cost')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+          <inertia-link class="btn-indigo-flat ml-auto pull-right" :href="route('lcc-report')">
+            <span>LCC Report</span>
+          </inertia-link>
+        </div>
     </div>
     <div class="bg-white overflow-hidden">
       <div class="w-full border-b flex flex-nowrap justify-between items-center bg-gray-50 p-1 py-1 px-2.5">
         <div class="flex items-center">
           <!-- <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Define Life Cycle Cost</h3> -->
         </div>
-        <div class="flex">
-          <inertia-link :href="route('individual-cost')" class="btn-indigo-flat mr-2"> Back </inertia-link>
-          <inertia-link class="btn-indigo-flat ml-auto pull-right" :href="route('lcc-report')">
-            <span>LCC Report</span>
-          </inertia-link>
-        </div>
+        
       </div>
       <div class="topnav" v-if="$page.props.isProjectScreen">
-        <a class="text-sm" @click="toggleGraphTab('life-cycle-cost')"
-          :class="visibleGraph == 'life-cycle-cost' ? 'active' : ''">Life-Cycle Cost</a>
-        <a class="text-sm" @click="toggleGraphTab('timeline')"
-          :class="visibleGraph == 'timeline' ? 'active' : ''">Timelines</a>
+        <a class="text-sm" @click="toggleGraphTab('life-cycle-cost')" :class="visibleGraph == 'life-cycle-cost' ? 'active' : ''">Life-Cycle Cost</a>
+        <a class="text-sm" @click="toggleGraphTab('timeline')" :class="visibleGraph == 'timeline' ? 'active' : ''">Timelines</a>
         <a href="javascript:void(0);" class="icon" @click="toggleNavbar($event)">
           <icon name="cheveron-down" class="fill-current w-4 h-4 mx-2 mt-1" />
         </a>
@@ -34,12 +32,11 @@
                 <th class="py-2 px-6 text-center">Construction Cost</th>
                 <th class="py-2 px-6 text-center">Barrier Cost</th>
                 <th class="py-2 px-6 text-center">Repair Cost</th>
-                <th class="py-2 px-6 text-center">Life-Cycle Cost</th>
+                <th class="py-2 px-6 text-center">Life Cycle Cost</th>
               </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-              <tr v-for="(set, index) in tableData" :key="index" :style="`color: ${altColors[index]}`"
-                class="border-b border-gray-200 hover:bg-gray-100">
+              <tr v-for="(set, index) in tableData" :key="index" :style="`color: ${altColors[index]}`" class="border-b border-gray-200 hover:bg-gray-100">
                 <td class="py-2 px-6">
                   <span class="text-sm font-medium">{{ set[0] }}</span>
                 </td>
@@ -66,50 +63,29 @@
       </div>
 
       <div v-if="visibleGraph == 'life-cycle-cost'" class="p-1 -mr-5 -mb-2 flex w-full flex-wrap">
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :apRatio="1.5" :key="uuid2" type="bar" :xLabel="'Alternatives'" :yLabel="`$`"
-            title="Life-Cycle Cost, by Alternative" :labels="createGraph2X()" :datasets="createGraph2Y()" />
-        </div>
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :apRatio="1.5" :key="uuid2" type="bar" :stacked="true" :xLabel="'Alternatives'"
-            :yLabel="`$`" title="Component Costs" :labels="createGraph3X()" :datasets="createGraph3Y()" />
-        </div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :apRatio="1.5" :key="uuid2" type="bar" :xLabel="'Alternatives'" :yLabel="`$`" title="Life Cycle Cost, by Alternative" :labels="createGraph2X()" :datasets="createGraph2Y()" /></div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :apRatio="1.5" :key="uuid2" type="bar" :stacked="true" :xLabel="'Alternatives'" :yLabel="`$`" title="Component Costs" :labels="createGraph3X()" :datasets="createGraph3Y()" /></div>
       </div>
       <div v-if="visibleGraph == 'timeline'" class="p-1 -mr-5 -mb-2 flex w-full flex-wrap">
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :key="uuid2" :apRatio="1.5" type="bar" :xLabel="'Years'"
-            :yLabel="`Constant Dollars ($)`" title="Constant Costs" :labels="createGraph4X()"
-            :datasets="createGraph4Y()" />
-        </div>
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :key="uuid2" type="line" :apRatio="1.5" :xLabel="'Years'"
-            :yLabel="`Constant Dollars ($)`" title="Cumulative Present Value" :labels="createGraph5X()"
-            :datasets="createGraph5Y()" />
-        </div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :key="uuid2" :apRatio="1.5" type="bar" :xLabel="'Years'" :yLabel="`Constant Dollars ($)`" title="Constant Costs" :labels="createGraph4X()" :datasets="createGraph4Y()" /></div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :key="uuid2" type="line" :apRatio="1.5" :xLabel="'Years'" :yLabel="`Constant Dollars ($)`" title="Cumulative Present Value" :labels="createGraph5X()" :datasets="createGraph5Y()" /></div>
       </div>
       <div v-if="visibleGraph == 'timeline'" class="p-1 -mr-5 -mb-2 flex w-full flex-wrap">
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :key="uuid2" type="bar" :apRatio="1.5" :xLabel="'Years'"
-            :yLabel="`Current Dollars ($)`" title="Current Costs" :labels="createGraph6X()" :datasets="createGraph6Y()" />
-        </div>
-        <div class="w-full lg:w-1/2">
-          <Chart class="chart2 m-5" :key="uuid2" type="line" :apRatio="1.5" :xLabel="'Years'"
-            :yLabel="`Current Dollars ($)`" title="Cumulative Current Costs" :labels="createGraph7X()"
-            :datasets="createGraph7Y()" />
-        </div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :key="uuid2" type="bar" :apRatio="1.5" :xLabel="'Years'" :yLabel="`Current Dollars ($)`" title="Current Costs" :labels="createGraph6X()" :datasets="createGraph6Y()" /></div>
+        <div class="w-full lg:w-1/2"><Chart class="chart2 m-5" :key="uuid2" type="line" :apRatio="1.5" :xLabel="'Years'" :yLabel="`Current Dollars ($)`" title="Cumulative Current Costs" :labels="createGraph7X()" :datasets="createGraph7Y()" /></div>
       </div>
     </div>
-    <div class="w-full border-b flex flex-nowrap justify-between items-center bg-gray-50 p-1 py-1 px-2.5">
-      <div class="flex items-center">
-        <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
+    <div class="flex w-full border-b flex flex-nowrap justify-between items-center bg-gray-50 p-1 py-1 px-2.5">
+        <div class="flex items-center">
+          <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
+        </div>
+        <div class="flex">
+          <inertia-link :href="route('individual-cost')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+          <inertia-link class="btn-indigo-flat ml-auto pull-right" :href="route('lcc-report')">
+            <span>LCC Report</span>
+          </inertia-link>
+        </div>
       </div>
-      <div class="flex">
-        <inertia-link :href="route('individual-cost')" class="btn-indigo-flat mr-2"> Back </inertia-link>
-        <inertia-link class="btn-indigo-flat ml-auto pull-right" :href="route('lcc-report')">
-          <span>LCC Report</span>
-        </inertia-link>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -156,15 +132,13 @@ export default {
     colors: [Object, Array],
   },
   computed: {},
-  created() { },
-  mounted() {
+  created() {},
+  mounted(){
     EventBus.$on("navigateApplicationTo", (data) => {
-
-      if (Array.isArray(data)) {
-
-        this.$inertia.visit(this.route(data[0], data[1]), { method: 'get' })
-      } else {
-
+      // window.location.replace(window.location.origin +'/'+ data);
+        if(Array.isArray(data)){
+        this.$inertia.visit(this.route(data[0],data[1]), { method: 'get' })
+      }else{
         this.$inertia.visit(this.route(data), { method: 'get' })
       }
     });
@@ -187,7 +161,6 @@ export default {
       cumCurrentGraphData: this.lccResults.results.cumCurrent.dataset,
     }
   },
-
   methods: {
     generateReport() {
       this.$refs.html2Pdf.generatePdf()
@@ -223,18 +196,15 @@ export default {
         })
         .then((response) => {
           const { data } = response
-
           //Storing to state
           this.$store.state.currentSystem = data.current_system
           this.$store.state.ecoParameters = data.ecoparameters
-
           //Setting data values
           this.concentrationUnitsOptions = data.conc_units
           this.area_unit = data.area_unit
           this.volume_unit = data.volume_unit
           this.weight_unit = data.weight_unit
           this.capacity_unit = data.capacity_unit
-
           //Setting form values
           this.form.concUnits = data.default_conc_unit
           this.form.ecoparameters = data.ecoparameters
@@ -255,25 +225,20 @@ export default {
         })
     },
     getSublocations(value) {
-
       axios.get(`/get-sublocations/${value}`).then((response) => {
-
         const { data } = response
         this.sublocationOptions = data.sublocations
         this.form.sublocation = data.default_value
         this.getExposures()
       })
     },
-
     getExposures() {
       axios.get(`/get-exposures/${this.form.subLocation}`).then((response) => {
-
         const { data } = response
         this.exposureOptions = data.exposures
         this.form.exposureType = data.default_value
       })
     },
-
     validateAndUpdateParams(parameter, field, entry, min, max) {
       if (entry && entry > max) {
         swal('Allowable range of values for ' + field + ' is [' + min + ' , ' + max + ']')
@@ -283,9 +248,7 @@ export default {
         entry = min
       }
     },
-
     onGridReady(params) {
-
       this.gridApi = params.api
       this.gridColumnApi = params.columnApi
 
@@ -324,12 +287,10 @@ export default {
     createGraph3X() {
       let xAxis = []
       for (let i = 0; i < this.projectData.project.projectData.alts.alt.length; i++) {
-
         xAxis.push(this.projectData.project.projectData.alts.alt[i].alternative.name)
       }
       return xAxis
     },
-
     createGraph3Y() {
       let yAxis = []
       let constructionCost = []
@@ -349,7 +310,6 @@ export default {
       for (let i = 0; i < this.tableData.length; i++) {
         repairCost.push(this.tableData[i][2].replace(/\$/g, '').replace(/,/g, ''))
       }
-
       yAxis.push({
         label: 'Repair Cost',
         backgroundColor: propColor,
@@ -360,8 +320,8 @@ export default {
     },
     createGraph4X() {
       let xAxis = []
-      for (let i = 0; i < Object.keys(this.constantGraphData).length - 1; i++) {
-        Object.entries(this.constantGraphData[this.projectData.project.projectData.alts.alt[i].alternative.name]).forEach(([key, value]) => xAxis.push(key))
+      for (let i = 0; i < Object.keys(this.constantGraphData).length-1; i++) {
+      Object.entries(this.constantGraphData[this.projectData.project.projectData.alts.alt[i].alternative.name]).forEach(([key, value]) => xAxis.push(key))
       }
       return xAxis
     },
@@ -371,22 +331,22 @@ export default {
       let bgColorList = []
 
       for (let i = 0; i < Object.keys(this.constantGraphData).length; i++) {
-        let ydats_data = [];
+        let ydats_data=[];
         Object.entries(this.constantGraphData[this.projectData.project.projectData.alts.alt[i].alternative.name]).forEach(([key, value]) => {
           values.push(value)
           ydats_data.push(value)
           // bgColorList.push(this.altColors[i])
         })
-        yAxis.push({
-          // label: 'Constant Cost ($)',
-          label: this.projectData.project.projectData.alts.alt[i].alternative.name,
-          borderColor: this.altColors[i],
-          data: ydats_data,
-        })
+           yAxis.push({
+            // label: 'Constant Cost ($)',
+            label: this.projectData.project.projectData.alts.alt[i].alternative.name,
+            borderColor: this.altColors[i],
+            data: ydats_data,
+          })
         // bgColorList.push(this.altColors[i])
       }
 
-
+     
       console.log(this.constantGraphData);
       return yAxis
     },
@@ -400,7 +360,7 @@ export default {
       let bgColorList = []
 
       for (let i = 0; i < Object.keys(this.cumConstantGraphData).length; i++) {
-        let ydats_data = [];
+        let ydats_data=[];
         Object.entries(this.cumConstantGraphData[this.projectData.project.projectData.alts.alt[i].alternative.name]).forEach(([key, value]) => ydats_data.push(value))
         bgColorList.push(this.altColors[i])
         yAxis.push({
@@ -453,12 +413,12 @@ export default {
         Object.entries(this.cumCurrentGraphData[this.projectData.project.projectData.alts.alt[i].alternative.name]).forEach(([key, value]) => values.push(value))
         bgColorList.push(this.altColors[i])
         legendList.push(this.projectData.project.projectData.alts.alt[i].alternative.name)
-        yAxis.push({
-          label: this.projectData.project.projectData.alts.alt[i].alternative.name,
-          pointRadius: 0,
-          borderColor: this.altColors[i],
-          data: values,
-        })
+          yAxis.push({
+            label: this.projectData.project.projectData.alts.alt[i].alternative.name,
+            pointRadius: 0,
+            borderColor: this.altColors[i],
+            data: values,
+          })
       }
 
       return yAxis
@@ -472,7 +432,6 @@ export default {
   background-color: #f5f5f5;
   padding: 10px;
 }
-
 .topnav {
   overflow: hidden;
   background-color: #333;
@@ -506,7 +465,6 @@ export default {
   .topnav a:not(:first-child) {
     display: none;
   }
-
   .topnav a.icon {
     float: right;
     display: block;
@@ -517,13 +475,11 @@ export default {
   .topnav.responsive {
     position: relative;
   }
-
   .topnav.responsive .icon {
     position: absolute;
     right: 0;
     top: 0;
   }
-
   .topnav.responsive a {
     float: none;
     display: block;

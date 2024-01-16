@@ -1,49 +1,37 @@
-<!-- The Exposure panel and associated ASTM panel -->
 <template>
   <div id="locations">
-    <div
-      class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
+    <form @submit.prevent="store">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
       <h1 class="font-semibold text-2xl">Project Exposure Details</h1>
+      <div class="flex">
+              <inertia-link :href="route('set-project')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+              <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button>
+      </div>
     </div>
     <div class="bg-white overflow-hidden">
-      <form @submit.prevent="store">
-
+      
+        
         <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
-          <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Select Method for Setting External Concentration and Temperature
-            Profile</h3>
-          <div class="flex">
-            <inertia-link :href="route('set-project')" class="btn-indigo-flat mr-2"> Back </inertia-link>
-            <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2"
-              type="submit">Next</loading-button>
+            <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Select Method for Setting External Concentration and Temperature Profile</h3>
+            
           </div>
-        </div>
         <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 py-1 px-2.5">
-          <input id="false" @change="renderBothGraphs()" :value="false" :checked="!form.setManually" class="p-2"
-            v-model="form.setManually" type="radio" />
+          <input id="false" @change="renderBothGraphs()" :value="false" :checked="!form.setManually" class="p-2" v-model="form.setManually" type="radio" />
           <label class="p-1 font-semibold">Use Defaults</label>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-4 p-2.5">
-          <select-input :disabled="form.setManually" id="location" @input="getSublocations($event)"
-            v-model="form.location" :tool-tip-text="helping_tips.exposure_location" :error="form.errors.location"
-            class="block" :required="true" :label="'Location'">
+          <select-input :disabled="form.setManually" id="location" @input="getSublocations($event)" v-model="form.location" :tool-tip-text="helping_tips.exposure_location" :error="form.errors.location" class="block" :required="true" :label="'Location'">
             <option v-for="(location, index) in locationOptions" :key="index" :value="index">{{ location }}</option>
           </select-input>
-          <select-input :disabled="form.setManually" id="sub-location" @input="getExposures($event)"
-            v-model="form.subLocation" :tool-tip-text="helping_tips.exposure_sub_location"
-            :error="form.errors.subLocation" class="block" :required="true" :label="'Sub-locations'">
-            <option v-for="(sublocation, index) in sublocationOptions" :key="index" :value="index">{{ sublocation }}
-            </option>
+          <select-input :disabled="form.setManually" id="sub-location" @input="getExposures($event)" v-model="form.subLocation" :tool-tip-text="helping_tips.exposure_sub_location" :error="form.errors.subLocation" class="block" :required="true" :label="'Sub-locations'">
+            <option v-for="(sublocation, index) in sublocationOptions" :key="index" :value="index">{{ sublocation }}</option>
           </select-input>
-          <select-input :disabled="form.setManually" id="exposure" @input="getConcAndTemperatures()"
-            v-model="form.exposureType" :tool-tip-text="helping_tips.exposure_exposure" :error="form.errors.exposureType"
-            class="block" :required="true" :label="'Exposure'">
+          <select-input :disabled="form.setManually" id="exposure" @input="getConcAndTemperatures()" v-model="form.exposureType" :tool-tip-text="helping_tips.exposure_exposure" :error="form.errors.exposureType" class="block" :required="true" :label="'Exposure'">
             <option v-for="(exposure, index) in exposureOptions" :key="index" :value="index">{{ exposure }}</option>
           </select-input>
         </div>
         <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 px-2.5">
-          <input id="true" @change="renderBothGraphs()" :value="true" :checked="form.setManually"
-            @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)" class="p-2" v-model="form.setManually"
-            type="radio" />
+          <input id="true" @change="renderBothGraphs()" :value="true" :checked="form.setManually" @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)" class="p-2" v-model="form.setManually" type="radio" />
           <label class="p-1 font-semibold">Set Values Manually</label>
         </div>
         <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 py-1 px-2.5">
@@ -57,48 +45,29 @@
               <input :disabled="!form.setManually" type="radio" id="yes" :value="false" v-model="form.useC1556" />
             </span>
             <span class="block">
-              <number-input :rules="`required|min_value:0|max_value:1000`"
-                :title="`Allowable range of values is [0 , 1000]`" @input="renderGraph1(form.maxSurfaceConcentration)"
-                :disabled="!form.setManually || form.useC1556" v-model="form.maxSurfaceConcentration" step="any"
-                :error="form.errors.maxSurfaceConcentration" :required="true" class="block"
-                :label="'Manual (' + $page.props.concUnits + ')'" />
+              <number-input :rules="`required|min_value:0|max_value:1000`" :title="`Allowable range of values is [0 , 1000]`" @input="renderGraph1(form.maxSurfaceConcentration)" :disabled="!form.setManually || form.useC1556" v-model="form.maxSurfaceConcentration" step="any" :error="form.errors.maxSurfaceConcentration" :required="true" class="block" :label="'Manual (' + $page.props.concUnits + ')'" />
             </span>
-            <span class="mb-8 w-full lg:w-1/6 text-center self-center"><input type="radio" id="yes" :value="true"
-                v-model="form.useC1556" @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)"
-                :disabled="!form.setManually" /></span>
-            <span class="block pb-2"><select-input :disabled="!form.setManually || !form.useC1556"
-                @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)" v-model="form.c1556SetUsed"
-                :tool-tip-text="helping_tips.exposure_mannual" :error="form.errors.c1556Sets" class="block"
-                :required="true" :label="'ASTM C1556 (' + $page.props.concUnits + ')'">
-                <option v-for="(c1556Set, index) in form.c1556Sets" :key="index" :value="c1556Set.name">{{ c1556Set.name
-                }}</option>
+            <span class="mb-8 w-full lg:w-1/6 text-center self-center"><input type="radio" id="yes" :value="true" v-model="form.useC1556" @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)" :disabled="!form.setManually" /></span>
+            <span class="block pb-2"
+              ><select-input :disabled="!form.setManually || !form.useC1556" @input="updateMaxCSAndTimeToMaxBasedOnASTM(form.c1556SetUsed)" v-model="form.c1556SetUsed" :tool-tip-text="helping_tips.exposure_mannual" :error="form.errors.c1556Sets" class="block" :required="true" :label="'ASTM C1556 (' + $page.props.concUnits + ')'">
+                <option v-for="(c1556Set, index) in form.c1556Sets" :key="index" :value="c1556Set.name">{{ c1556Set.name }}</option>
               </select-input>
             </span>
 
             <span v-show="form.setManually && form.useC1556" class="pb-2 w-full">
-              <span :disabled="!form.setManually || !form.useC1556" @click="toggleASTMWindow()"
-                class="btn-indigo-small ml-auto astm-buttons">Add New</span>
-              <span :disabled="!form.setManually || !form.useC1556 || !form.c1556SetUsed" @click="editASTMWindow()"
-                class="btn-indigo-small btnsmall ml-auto astm-buttons">Edit Set</span>
-              <span :disabled="!form.setManually || !form.useC1556 || !form.c1556SetUsed"
-                class="btn-indigo-small ml-auto astm-buttons" @click="deleteASTMSet()">Delete</span>
+              <span :disabled="!form.setManually || !form.useC1556" @click="toggleASTMWindow()" class="btn-indigo-small ml-auto astm-buttons">Add New</span>
+              <span :disabled="!form.setManually || !form.useC1556 || !form.c1556SetUsed" @click="editASTMWindow()" class="btn-indigo-small btnsmall ml-auto astm-buttons">Edit Set</span>
+              <span :disabled="!form.setManually || !form.useC1556 || !form.c1556SetUsed" class="btn-indigo-small ml-auto astm-buttons" @click="deleteASTMSet()">Delete</span>
             </span>
             <span class="pr-5 pb-2 block"><strong>Time to Max</strong></span>
-            <number-input @input="renderGraph1(form.timeToBuildUp)" :rules="`required|min_value:0|max_value:1000`"
-              :title="`Allowable range of values is [0 , 1000]`" :disabled="!form.setManually"
-              v-model="form.timeToBuildUp" step="any" :tool-tip-text="helping_tips.exposure_time_to_max"
-              :error="form.errors.timeToBuildUp" :required="true" class="block"
-              :label="'Years to build to max surface concentration'" />
+            <number-input @input="renderGraph1(form.timeToBuildUp)" :rules="`required|min_value:0|max_value:1000`" :title="`Allowable range of values is [0 , 1000]`" :disabled="!form.setManually" v-model="form.timeToBuildUp" step="any" :tool-tip-text="helping_tips.exposure_time_to_max" :error="form.errors.timeToBuildUp" :required="true" class="block" :label="'Years to build to max surface concentration'" />
           </div>
           <div id="graphCanvas1" class="rightBlockGraph">
-            <Chart class="chart1" :key="uuid1" type="line" :apRatio="$page.props.isMobile ? 1.5 : 2"
-              :title="'Surface Concentration'" :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()"
-              :datasets="createGraph1Y()" />
+            <Chart class="chart1" :key="uuid1" type="line" :apRatio="$page.props.isMobile? 1.5 : 2" :title="'Surface Concentration'" :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()" :datasets="createGraph1Y()" />
           </div>
         </div>
         <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 py-1 px-2.5">
-          <h3 class="font-semibold">Temperature Cycle ({{ temperature_unit }}) ({{ form.setManually ? 'User defined' :
-            'Automatically set' }})</h3>
+          <h3 class="font-semibold">Temperature Cycle ({{ temperature_unit }}) ({{ form.setManually ? 'User defined' : 'Automatically set' }})</h3>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-6 p-2.5">
           <div class="leftBlockGrid">
@@ -118,9 +87,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.jan_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.jan_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -130,9 +97,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.feb_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.feb_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -142,9 +107,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.mar_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.mar_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -154,9 +117,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.apr_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.apr_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -166,9 +127,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.may_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.may_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -178,9 +137,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.jun_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.jun_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -190,9 +147,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.jul_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.jul_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -202,9 +157,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.aug_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.aug_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -214,9 +167,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.sep_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.sep_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -226,9 +177,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.oct_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.oct_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -238,9 +187,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.nov_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.nov_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -250,9 +197,7 @@
                       </td>
                       <td class="py-1 px-3 whitespace-nowrap text-right">
                         <span class="text-sm font-medium text-gray-900">
-                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]"
-                            :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually"
-                            :value.sync="form.dec_temp" @update="renderGraph2()"></inline-text-editor>
+                          <inline-text-editor :min="-45.6" :max="65.6" title="Allowable range of values is [-45.6, 65.6]" :required="true" :close-on-blur="true" :type="'number'" :disabled="!form.setManually" :value.sync="form.dec_temp" @update="renderGraph2()"></inline-text-editor>
                         </span>
                       </td>
                     </tr>
@@ -262,21 +207,19 @@
             </div>
           </div>
           <div id="graphCanvas2" class="rightBlockGraph">
-            <Chart class="chart2" :key="uuid2" type="line" :apRatio="$page.props.isMobile ? 1.5 : 2" :xLabel="'Month'"
-              :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph"
-              :labels="createGraph2X()" :datasets="createGraph2Y()" />
+            <Chart class="chart2" :key="uuid2" type="line" :apRatio="$page.props.isMobile? 1.5 : 2" :xLabel="'Month'" :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph" :labels="createGraph2X()" :datasets="createGraph2Y()" />
           </div>
         </div>
-        <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
-          <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
-          <div class="flex">
-            <inertia-link :href="route('set-project')" class="btn-indigo-flat mr-2"> Back </inertia-link>
-            <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2"
-              type="submit">Next</loading-button>
+        <div class="flex w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+            <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
+            <div class="flex">
+              <inertia-link :href="route('set-project')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+              <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button>
+            </div>
           </div>
-        </div>
-      </form>
+      
     </div>
+  </form>
   </div>
 </template>
 
@@ -339,23 +282,23 @@ export default {
     this.getRedefinedUnits(this.baseUnits)
     this.getSublocations(this.projectData.project.projectData.exposureLocale.location, 'initialCall')
     EventBus.$on("navigateApplicationTo", (data) => {
-      try {
-        if (Array.isArray(data)) {
-          var urlrout = this.route(data[0], data[1])
-        } else {
-          var urlrout = data
-        }
-        this.form.intendedUrl = data;
-        if (data)
-          // EventBus.$off("navigateApplicationTo");
-          this.store()
+      try{
+        if(Array.isArray(data)){
+          var urlrout=this.route(data[0],data[1])
+      }else{
+        var urlrout=data
       }
-      catch (e) {
-        console.log(e);
+      this.form.intendedUrl = data;
+      if(data)
+        // EventBus.$off("navigateApplicationTo");
+      this.store()
+      }
+      catch(e){
+       console.log(e); 
       }
     });
   },
-  created() { },
+  created() {},
   data() {
     return {
       rowStyle: { background: 'white', fontWeight: 500 },
@@ -503,9 +446,9 @@ export default {
                 // prevC1556SetUsed
                 let setData = this.form.c1556Sets.find((set) => set.name === this.form.c1556SetUsed)
                 if (setData) {
-                  this.form.prevC1556SetUsed = this.form.c1556SetUsed
-                } else {
-                  this.form.c1556SetUsed = this.form.prevC1556SetUsed
+                  this.form.prevC1556SetUsed=this.form.c1556SetUsed
+                }else{
+                  this.form.c1556SetUsed=this.form.prevC1556SetUsed
                 }
                 this.updateMaxCSAndTimeToMaxBasedOnASTM(this.form.c1556SetUsed)
               },
@@ -718,11 +661,9 @@ export default {
 .mx-input {
   height: 40px !important;
 }
-
 .span-btn {
   cursor: pointer;
 }
-
 #graphCanvas2 {
   align-content: center;
 }
@@ -730,7 +671,6 @@ export default {
 #graphCanvas1 {
   align-content: center;
 }
-
 .chart1 {
   background-color: #f5f5f5;
   padding: 10px;
@@ -754,7 +694,6 @@ button:disabled {
   pointer-events: none;
   opacity: 0.75;
 }
-
 .swal-content {
   margin-left: 30px;
   margin-right: 30px;

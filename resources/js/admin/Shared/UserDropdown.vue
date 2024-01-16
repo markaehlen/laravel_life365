@@ -1,4 +1,3 @@
-<!-- IS THIS USED? Physical layout and functions for a drop down box-->
 <template>
   <div>
     <a ref="btnDropdownRef" class="text-blueGray-500 block" href="#pablo" @click="toggleDropdown($event)">
@@ -8,41 +7,34 @@
         </span>
       </div>
     </a>
-    <div ref="popoverDropdownRef"
-      class="bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1" :class="{
+    <div
+      ref="popoverDropdownRef"
+      class="bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+      :class="{
         hidden: !dropdownPopoverShow,
         block: dropdownPopoverShow,
-      }" style="min-width: 12rem">
-      <a href="#pablo"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+      }"
+      style="min-width: 12rem"
+    >
+      <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Action
       </a>
-      <a href="#pablo"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+      <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Another action
       </a>
-      <a href="#pablo"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+      <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Something else here
       </a>
       <div class="h-0 my-2 border border-solid border-blueGray-100" />
-      <a href="#pablo"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
+      <a href="#pablo" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700">
         Seprated link
       </a>
     </div>
   </div>
 </template>
-
-// procedural code
 <script>
-// imported controls/utilities
 import { createPopper } from '@popperjs/core'
-
-// create the control
 export default {
-
-  // set the properties of the control
   props: {
     placement: {
       type: String,
@@ -57,16 +49,12 @@ export default {
       default: true,
     },
   },
-
-  // set the data of the control, in paticular when data is needed from the control
   data() {
     return {
       dropdownPopoverShow: false,
     }
   },
-
   mounted() {
-
     document.addEventListener('keydown', e => {
       if (e.keyCode === 27) {
         this.dropdownPopoverShow = false
@@ -75,22 +63,15 @@ export default {
   },
 
   methods: {
-
-    // when user clicks on the dropdown button, toggle the dropdown
-    toggleDropdown: function (event) {
-
+    toggleDropdown: function(event) {
       event.preventDefault()
       if (this.dropdownPopoverShow) {
-
         this.dropdownPopoverShow = false
       } else {
-
         this.dropdownPopoverShow = true
         createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
-
           placement: this.placement,
           modifiers: {
-
             preventOverflow: { boundariesElement: this.boundary },
           },
         })

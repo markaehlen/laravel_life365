@@ -1,0 +1,33 @@
+/*!
+ * Chart.js v3.7.1
+ * https://www.chartjs.org
+ * (c) 2022 Chart.js Contributors
+ * Released under the MIT License
+ */
+
+/*!
+ * vue-range-slider v1.0.3
+ * (c) 2016-2018 xwpongithub
+ * Released under the MIT License.
+ */
+
+/**
+  * vee-validate v3.4.14
+  * (c) 2021 Abdelrahman Awad
+  * @license MIT
+  */
+
+/**
+  * vue-class-component v7.2.6
+  * (c) 2015-present Evan You
+  * @license MIT
+  */
+
+/**
+ * @ag-grid-community/core - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * @version v26.2.1
+ * @link http://www.ag-grid.com/
+ * @license MIT
+ */
+
+/*@cc_on!@*/

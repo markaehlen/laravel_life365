@@ -99,7 +99,6 @@ class Helper
     // }
     public static function callAPI($loginDetails, $inputJSON, $procedure)
     {   
-        
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 300);
         File::put(public_path('/uploads/apicalls/input.json'), json_encode($inputJSON));
@@ -148,7 +147,7 @@ class Helper
                               
                 if($api_proc_res->error!='' && $api_proc_res->error!="[]"){
                     $jsonFilePath = Storage::disk('stag_file_for_api')->path($procedure . '/' . $fileid . '.json');
-                    Mail::to(['mark.ehlen.consulting@gmail.com','ahsanshahzad920@gmail.com'])->cc('david@webscope.com')->send(new \App\Mails\Admin\Errorlog($error,$jsonFilePath));
+                    // Mail::to(['mark.ehlen.consulting@gmail.com','ahsanshahzad920@gmail.com'])->cc('david@webscope.com')->send(new \App\Mails\Admin\Errorlog($error,$jsonFilePath));
                 }
             }
             

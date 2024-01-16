@@ -26,30 +26,37 @@ use Session;
 class ExposureController extends Controller
 {
     public function index(Request $request)
-    {
+    {      
 
         $project = $this->getProject();
-
+        
         $saved_defaults = json_decode($project->inputs);
-
+        
         if (session('project')) {
-
+            
             // dd(session('project'));
-            $inputJSON = session('project');
-        } else {
-            $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+            $inputJSON=session('project');
+        }else
+        {
+          $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+         
         }
-
+        
+        
+        
+        
         $projectData = $inputJSON;
+        
 
         $locations_query = Location::isActive();
-
+        
+        
         $locations = $locations_query->whereHas('sublocations', function ($q) {
             $q->isActive()->whereHas('exposures', function ($query) {
                 $query->isActive();
             });
         })->pluck('name', 'name')->toArray();
-
+        
         $colors = [];
 
         array_push($colors, $saved_defaults->base_alt_color, $saved_defaults->alt1_color, $saved_defaults->alt2_color, $saved_defaults->alt3_color, $saved_defaults->alt5_color);
@@ -60,12 +67,12 @@ class ExposureController extends Controller
         for ($i = 0; $i < sizeof($raw_temp_data); $i++) {
             $temperature_entries[$raw_temp_data[$i]['calendarMonth']] = $raw_temp_data[$i]['temperature'];
         }
-
+        //dd($projectData);
         $loginResults = Helper::authenticateAPI();
-
+        // dd($inputJSON);
         Helper::callAPI($loginResults, $inputJSON, 'astm');
         $helping_tips = HelpTip::where('category', 'exposure')->pluck('content', 'slug');
-
+        
         return Inertia::render('Exposure/Exposure', [
             'isProjectScreen' => true,
             'locationOptions' => $locations,
@@ -81,7 +88,7 @@ class ExposureController extends Controller
             "siUnits" => Config::get('units.sUnitsSI'),
             //Colors
             'colors' => $colors,
-            'helping_tips' => $helping_tips,
+            'helping_tips'=>$helping_tips,
         ]);
     }
 
@@ -177,10 +184,8 @@ class ExposureController extends Controller
         $yearlyIncrement = 1;
 
         if ($sublocation_data->max_cs) {
-
             $dMaxConc = $sublocation_data->max_cs;
         } else {
-
             $dMaxConc = 0.5;
         }
 
@@ -188,36 +193,27 @@ class ExposureController extends Controller
             $yearlyIncrement = $sublocation_data->build_up;
         }
 
-        // CODE TO FIX MAXCS AND BUILDUP FOR EXPOSURES - if 
-        // $exposure is incorrectly spelled, then this logic will NEVER set 
-        // dMaxConc and yearlyIncrement, resuting in the starting values, 
-        // which will be WRONG
-        if ($exposure === "Marine Spray Zone") {
+        if ($exposure === "Marine spray zone") {
             $dMaxConc = 1.0;
             $yearlyIncrement = 0.10;
-        } else if ($exposure === "Marine Tidal Zone") {
+        } else if ($exposure === "Marine tidal zone") {
             $dMaxConc = 0.80;
             $yearlyIncrement = 1.0;
         } else if ($exposure === "Within 800 m of the ocean") {
             $dMaxConc = 0.60;
             $yearlyIncrement = 0.04;
-        } else if ($exposure === "Within 1.5 km of the ocean") {
+        } else if ($exposure === "Within 1.5km of the ocean") {
             $dMaxConc = 0.60;
             $yearlyIncrement = 0.02;
-            // CODE TO FIX - this needs to be "Parking garages" - see error messages
-            // for ExposureTypes that are allowed and check all of the 
-            // text names here for conformance to those names
-        } else if ($exposure === "Parking Garages") {
+        } else if ($exposure === "Parking garages") {
             $dMaxConc *= 1;
             $yearlyIncrement *= 1;
-        } else if ($exposure === "Urban Highway Bridges") {
+        } else if ($exposure === "Urban highway bridges") {
             $dMaxConc *= 0.85;
             $yearlyIncrement *= 0.85;
-        } else if ($exposure === "Rural Highway Bridges") {
+        } else if ($exposure === "Rural highway bridges") {
             $dMaxConc *= 0.70;
             $yearlyIncrement *= 0.70;
-        } else {
-            // CODE TO FIX - need to catch error here
         }
 
         $yearsToMax = max(1, $dMaxConc / $yearlyIncrement);
@@ -264,16 +260,16 @@ class ExposureController extends Controller
 
     public function calculateASTMData(Request $request)
     {
-
+        
         $inputJSON = $this->prepareASTMJSON($request->all());
-
+        
         $loginResults = Helper::authenticateAPI();
-
-        $inputJSON['project']['projectData'][''] = ["maxSurfaceConcentration" => 0.8];
+        
+        $inputJSON['project']['projectData']['']=["maxSurfaceConcentration" => 0.8];
         // dump(json_decode(json_encode($inputJSON)));
         // dd($loginResults);
         $apiResults = Helper::callAPI($loginResults, $inputJSON, 'astm');
-
+       
         if ($apiResults) {
             if ($apiResults->results) {
                 $decoded_results = json_decode($apiResults->results);
@@ -321,18 +317,18 @@ class ExposureController extends Controller
     public function saveExposureData(Request $request)
     {
         session(['exposure' => $request->exposureType]);
-
+      
         $inputJSON = $this->prepareJSON($request->all());
-
+        
         $runPostPageDataSave = Helper::postPageDataSave($inputJSON);
-
+       
         if ($runPostPageDataSave) {
-            if (is_array($request->intendedUrl)) {
-                // dump('1');
-                return Redirect::route($request->intendedUrl[0], $request->intendedUrl[1])->with('success', 'Project details saved successfully!');
-            }
-
-            return Redirect::route($request->intendedUrl ?: 'set-exposure')
+            if(is_array($request->intendedUrl)){
+               // dump('1');
+                return Redirect::route($request->intendedUrl[0],$request->intendedUrl[1])->with('success', 'Project details saved successfully!');
+              }
+        
+            return Redirect::route($request->intendedUrl?:'set-exposure')
                 ->with('success', 'Exposure details saved successfully!');
         } else {
             return Redirect::route('set-project')->with('error', 'Something went wrong!');
@@ -340,12 +336,12 @@ class ExposureController extends Controller
     }
 
     public function prepareJSON($inputData)
-    {
+    {   
         $project = $this->getProject();
         if (session('project')) {
-            $inputJSON = session('project');
-        } else {
-            $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
+            $inputJSON=session('project');
+        }else{
+        $inputJSON = json_decode(json_encode(json_decode($project->details)), true);
         }
         $tempJSON = $inputJSON['project']['projectData'];
 
@@ -396,7 +392,7 @@ class ExposureController extends Controller
                 $inputData['c1556Sets'][$i]['astmResults'] = [];
             }
         }
-
+        
         //assigning astm sets and active set
         $tempJSON['exposureConditions']['c1556Sets'] = $inputData['c1556Sets'];
         $tempJSON['exposureConditions']['c1556SetUsed'] = $inputData['c1556SetUsed'];
@@ -406,8 +402,8 @@ class ExposureController extends Controller
         $tempJSON['exposureConditions']['timeToBuildUp'] = $inputData['timeToBuildUp'];
 
         $inputJSON['project']['projectData'] = $tempJSON;
-
-        Session::put('project', $inputJSON);
+        
+        Session::put('project',$inputJSON);
         return  $inputJSON;
     }
 }

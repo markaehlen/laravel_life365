@@ -3,8 +3,7 @@
     <trashed-message v-if="ecoparameter.deleted_at" class="mb-5" :can-restore="authorize.restore" @restore="restore">
       This economic parameter has been deleted.
     </trashed-message>
-    <div
-      class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-5 mb-5">
+    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-5 mb-5">
       <h1 class="font-semibold text-2xl">Economic Parameters</h1>
       <div class="flex">
         <!-- breadcrumb -->
@@ -62,7 +61,6 @@ import ActionBack from '@admin/Shared/ActionBack'
 import TrashedMessage from '@admin/Shared/TrashedMessage'
 
 export default {
-
   name: 'EconomicParameterPreview',
   metaInfo() {
     return {
@@ -82,7 +80,7 @@ export default {
   methods: {
     restore() {
       const vInstance = this
-      if (!vInstance.authorize.restore) return
+      if(!vInstance.authorize.restore) return
       swal('Are you sure you want to restore this economic parameter?', {
         buttons: ['No', 'Yes'],
       }).then(value => {

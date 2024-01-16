@@ -7,14 +7,21 @@
           <h1 class="text-center font-bold text-2xl">Forgot Password</h1>
           <div class="mx-auto mt-5 w-24 border-b-2" />
           <!-- <text-input :required="true" v-model="form.email" :error="form.errors.email" class="mt-5" label="Email" autofocus autocapitalize="off" /> -->
-          <text-input :required="true" v-model="form.email" :class="{ 'input-error': form.errors.email }" class="mt-5"
-            label="Email" autofocus autocapitalize="off" />
+          <text-input 
+                :required="true" 
+                v-model="form.email" 
+                :class="{'input-error': form.errors.email}" 
+                class="mt-5" 
+                label="Email" 
+                
+                autofocus 
+                autocapitalize="off" 
+            />
+
         </div>
-        <div
-          class="px-10 py-4 bg-gray-100 border-t border-gray-100 flex justify-between items-center inst-login-block inl-blck">
+        <div class="px-10 py-4 bg-gray-100 border-t border-gray-100 flex justify-between items-center inst-login-block inl-blck">
           <inertia-link class="hover:underline" :href="route('login')">Login</inertia-link>
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Send Password Reset
-            Email</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Send Password Reset Email</loading-button>
         </div>
       </form>
     </div>

@@ -81,13 +81,11 @@ class EcoparameterController extends Controller
   public function store(EcoparameterRequest $request)
   {
     try {
-
       $ecoparameter = Ecoparameter::create([
         'name' => Request::get('name', 'section', 'type', 'default_value'),
       ]);
       return Redirect::route('admin.ecoparameters.index')->with('success', 'Eco-parameter has been created successfully.');
     } catch (\Exception $e) {
-
       return Redirect::route('admin.ecoparameters.index')->with('error', 'Something went wrong. Please try again later.');
     }
   }

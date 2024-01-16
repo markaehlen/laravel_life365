@@ -123,13 +123,27 @@ class DefaultsController extends Controller
 
     public function getSubLocations($location)
     {
-        $sublocations = Sublocation::isActive()->whereHas('location', function ($query) use ($location) {
-            $query->where('name', $location);
-        })->whereHas('exposures', function ($q) {
-            $q->isActive();
-        })->pluck('name', 'name')->toArray();
-        //dd($sublocations);
-        $default_selected_sublocation = array_key_first($sublocations);
+        // $sublocations = Sublocation::isActive()->whereHas('location', function ($query) use ($location) {
+        //     $query->where('name', $location);
+        // })->whereHas('exposures', function ($q) {
+        //     $q->isActive();
+        // })->pluck('name', 'name')->toArray();
+        // //dd($sublocations);
+        // $default_selected_sublocation = array_key_first($sublocations);
+
+        $sublocationsQuery = Sublocation::isActive()
+            ->whereHas('location', function ($query) use ($location) {
+                $query->where('name', $location);
+            })
+            ->whereHas('exposures', function ($q) {
+                $q->isActive();
+            });
+        $sublocations = $sublocationsQuery->pluck('name', 'name')->toArray();
+        $default_selected_sublocation = $sublocationsQuery->where('is_default', 1)->value('name');
+       
+        if($default_selected_sublocation==''){
+            $default_selected_sublocation= array_key_first($sublocations);
+        }
 
         return response()->json(['sublocations' => $sublocations, 'default_value' => $default_selected_sublocation]);
     }

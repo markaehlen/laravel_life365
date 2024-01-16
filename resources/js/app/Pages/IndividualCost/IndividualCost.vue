@@ -1,21 +1,23 @@
 <template>
   <div id="locations">
-    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
+    <ValidationObserver ref="form">
+    <form @submit.prevent="store">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
       <h1 class="font-semibold text-2xl">Individual Cost</h1>
-    </div>
-    <div class="bg-white overflow-hidden">
-      <ValidationObserver ref="form">
-        <form @submit.prevent="store">
-          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
-            <div class="flex items-center">
-              <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Concrete and Repair Unit Costs</h3>
-            </div>
-            <div class="flex">
+      <div class="flex">
               <inertia-link :href="route('service-life-report')" class="btn-indigo-flat mr-2"> Back </inertia-link>
               <inertia-link class="btn-indigo-flat" :href="route('life-cycle-cost')">
                 <span>Next</span>
               </inertia-link>
             </div>
+    </div>
+    <div class="bg-white overflow-hidden">
+      
+          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+            <div class="flex items-center">
+              <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Concrete and Repair Unit Costs</h3>
+            </div>
+            
           </div>
           <div class="flex w-full flex-wrap">
             <div v-if="visibleGraph == 'life-cycle-cost'" class="py-1 px-2.5 flex flex-wrap w-full lg:w-1/3">
@@ -216,7 +218,7 @@
               </div>
             </div>
           </div>
-          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+          <div class="flex w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
             <div class="flex items-center">
               <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
             </div>
@@ -227,9 +229,10 @@
               </inertia-link>
             </div>
           </div>
-        </form>
-      </ValidationObserver>
+        
     </div>
+    </form>
+    </ValidationObserver>
   </div>
 </template>
 

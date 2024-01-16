@@ -1,19 +1,21 @@
 <template>
   <div id="locations">
-    <div class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
+    <ValidationObserver ref="form">
+    <form @submit.prevent="store">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 py-1 px-2.5">
       <h1 class="font-semibold text-2xl">Project Details</h1>
-    </div>
-    <div class="bg-white overflow-hidden">
-      <ValidationObserver ref="form">
-        <form @submit.prevent="store">
-               <input type="hidden" id="navigateApplicationTo" name="navigateApplicationTo" class="form-control" v-model="form.intendedUrl" />
-          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
-            <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Identify Project</h3>
-            <div class="flex">
+      <div class="flex">
               <!-- <inertia-link :href="route('defaults')" class="btn-indigo-flat mr-2"> Back </inertia-link> -->
               <button v-if="!$page.props.currentAnalysis" class="btn-indigo-flat mr-2"  @click="back()">Back</button>
               <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button>
             </div>
+    </div>
+    <div class="bg-white overflow-hidden">
+      
+          <input type="hidden" id="navigateApplicationTo" name="navigateApplicationTo" class="form-control" v-model="form.intendedUrl" />
+          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+            <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0">Identify Project</h3>
+            
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-4 gap-4 p-2.5">
             <text-input v-model="form.title" :tool-tip-text="helping_tips.title_project_details" :rules="`required|max:50`" :required="true" :error="form.errors.title" class="block" label="Title" />
@@ -101,7 +103,7 @@
               <span v-if="form.alternatives.length < 6" class="btn-indigo-small ml-auto astm-buttons" @click="addAlternative()">Add New</span>
             </span>
           </div>
-          <div class="w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
+          <div class="flex w-full border-b lg:flex md:flex justify-between items-center bg-gray-50 py-1 px-2.5">
             <h3 class="font-semibold mb-2 lg:mb-0 md:mb-0"></h3>
             <div class="flex">
               <!-- <inertia-link :href="route('defaults')" class="btn-indigo-flat mr-2"> Back </inertia-link> -->
@@ -109,9 +111,10 @@
               <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button>
             </div>
           </div>
-        </form>
-      </ValidationObserver>
+        
     </div>
+    </form>
+    </ValidationObserver>
   </div>
 </template>
 

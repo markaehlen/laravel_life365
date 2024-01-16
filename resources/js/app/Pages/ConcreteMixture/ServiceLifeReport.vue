@@ -1,281 +1,79 @@
-<!-- A read only preview of what the report is so that user can print it. -->
 <template>
   <div id="locations">
-
-    <div
-      class="w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-1 mb-5">
+    <div class="flex w-full border-b block 2xl:flex xl:flex lg:flex md:flex flex-nowrap justify-between items-center bg-gray-50 p-1 mb-5">
       <h3 class="font-semibold">Service Life Report Preview</h3>
       <div class="flex">
-        <inertia-link :href="route('concrete-mixtures')" class="btn-indigo-flat mr-2"> Back </inertia-link>
-        <button class="btn-indigo-flat mr-2" @click="generateReport()">Print Report</button>
-        <!-- <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button> -->
-        <inertia-link class="btn-indigo-flat mr-2" :href="route('individual-cost')">
-          <span>Next</span>
-        </inertia-link>
+              <inertia-link :href="route('concrete-mixtures')" class="btn-indigo-flat mr-2"> Back </inertia-link>
+              <button class="btn-indigo-flat mr-2" @click="generateReport()">Print Report</button>
+              <!-- <loading-button id="save-button" :loading="form.processing" class="btn-indigo-flat mr-2" type="submit">Next</loading-button> -->
+              <inertia-link class="btn-indigo-flat mr-2" :href="route('individual-cost')">
+                <span>Next</span>
+              </inertia-link>
       </div>
-
+      
     </div>
-
     <div class="w-full" style="text-align: -webkit-center">
-      <div class="overflow-scroll" style="text-align: -webkit-center; width:1px;height:1px">
-        <vue-html2pdf class="w-full" :show-layout="true" :float-layout="false" :filename="`Service Life Report`"
-          :manual-pagination="true" :enable-download="true" ref="html2Pdf" pdf-format="a4">
-          <section slot="pdf-content">
-            <div class="bg-white overflow-hidden p-2">
-              <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mb-2">
-                <h3 class="font-semibold">Service Life Report</h3>
-              </div>
-              <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
-                <p class="font-semibold text-xs w-1/2">Project: {{ projectData.project.projectData.title }}</p>
-                <p class="font-semibold text-xs w-1/2">Description: {{ projectData.project.projectData.description }}</p>
-              </div>
-              <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
-                <p class="font-semibold text-xs w-1/2">Analyst: {{ projectData.project.projectData.doneByName }}</p>
-                <p class="font-semibold text-xs w-1/2">Date: {{ projectData.project.projectData.date }}</p>
-              </div>
-              <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mt-2">
-                <h3 class="font-semibold">Structure & Dimensions</h3>
-              </div>
-              <div class="flex flex-wrap w-full">
-                <div id="figureCanvas" class="p-1 -mb-2 w-1/3">
-                  <KonvaSLXSectionPlot :plotType="form.structure" :projectData="projectData.project.projectData"
-                    :key="keyKonvaSLXSectionPlot" :units="this.length_unit" :concUnits="concUnits" :maxConc="0"
-                    :allPoints="null" :thickness="parseFloat(form.trueThickness)"
-                    :clearCover="parseFloat(form.clearCover)" :iCurrentlyDisplayedMonth="0" :justSection="true"
-                    :style="{ background: 'whitesmoke', height: '100%', paddingTop: '10%' }" />
-                </div>
-                <div id="graphCanvas1" class="p-1 -mb-2 w-1/3">
-                  <Chart class="chart1" :apRatio="1" :key="uuid1" type="line" :title="'Surface Concentration'"
-                    :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()"
-                    :datasets="createGraph1Y()" />
-                </div>
-                <div id="graphCanvas2" class="p-1 -mb-2 w-1/3">
-                  <Chart class="chart2" :apRatio="1" :key="uuid2" type="line" :xLabel="'Month'"
-                    :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph"
-                    :labels="createGraph2X()" :datasets="createGraph2Y()" />
-                </div>
-              </div>
-              <div class="flex flex-wrap mt-2 w-full pt-1">
-                <div class="w-1/3">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">
-                    {{ form.structure }}
-                  </div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{
-                    form.trueThickness }} {{ length_unit }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover
-                  }} {{ length_unit }}</div>
-                </div>
-                <div class="w-1/3">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Surface Concentration</div>
-
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{
-                    form.maxSurfaceConcentration }} {{ concUnits }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{
-                    form.timeToBuildUp }} years</div>
-                </div>
-                <div class="w-1/3">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Monthly Temperatures</div>
-
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{
-                    form.subLocation }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{
-                    form.exposureType }}</div>
-                </div>
-              </div>
-
-              <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1">
-                <h3 class="font-semibold">Concrete Mixes</h3>
-              </div>
-              <div v-if="visibleGraph == 'life-cycle-cost'" class="text-sm flex w-full flex-wrap">
-                <div class="overflow-x-auto w-full">
-                  <table class="w-full whitespace-nowrap text-left">
-                    <thead>
-                      <tr class="bg-gray-200 text-gray-600 text-sm leading-normal">
-                        <th class="py-3 px-6">Name</th>
-                        <th class="py-3 px-6 text-center">User?</th>
-                        <th class="py-3 px-6 text-center">w/cm</th>
-                        <th class="py-3 px-6 text-center">SCMs</th>
-                        <th class="py-3 px-6 text-center">Inhib.</th>
-                        <th class="py-3 px-6 text-center">Barrier</th>
-                        <th class="py-3 px-6 text-right">Reinf.</th>
-                      </tr>
-                    </thead>
-                    <tbody class="text-gray-600 text-sm font-light">
-                      <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`"
-                        class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6">
-                          <span class="text-sm font-medium">{{ set.alternative.name }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{ set.alternative.userDefinedMixCost ? 'Yes' : 'No' }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.waterCementRatio
-                          }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium"></span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.inhibitor }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                          <span class="text-sm font-medium">{{
-                            set.alternative.concreteMixDesign.detailedBarrier.barrierName }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-right">
-                          <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.rebarType.type }}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="mt-5 w-full border-b flex flex-nowrap items-center bg-gray-50 p-1">
-                <h3 class="font-semibold">Diffusion Properties & Service Lives</h3>
-              </div>
-              <div v-if="visibleGraph == 'life-cycle-cost'" class="text-sm flex w-full flex-wrap">
-                <div class="overflow-x-auto w-full">
-                  <table class="w-full whitespace-nowrap text-left">
-                    <thead>
-                      <tr class="bg-gray-200 text-gray-600 text-sm leading-normal">
-                        <th class="py-3 px-6">Name</th>
-                        <th class="py-3 px-6 text-center">D28</th>
-                        <th class="py-3 px-6 text-center">m</th>
-                        <th class="py-3 px-6 text-center">Ct ({{ concUnits }})</th>
-                        <th class="py-3 px-6 text-center">Init.</th>
-                        <th class="py-3 px-6 text-center">Prop.</th>
-                        <th class="py-3 px-6 text-right">Service Life</th>
-                      </tr>
-                    </thead>
-                    <tbody class="text-gray-600 text-sm font-light">
-                      <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`"
-                        class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6">
-                          <span class="text-sm font-medium">{{ set.alternative.name }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{
-                            parseFloat(set.alternative.concreteMixDesign.d28).toExponential(2) }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.m }}</span>
-                        </td>
-                        <td class="py-3 px-6 whitespace-nowrap text-center">
-                          <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.ct }}</span>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                          <span class="text-sm font-medium">{{
-                            parseFloat(set.alternative.concreteMixDesign.initiationInYears).toFixed(2) }} yrs</span>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                          <span class="text-sm font-medium">{{
-                            parseFloat(set.alternative.concreteMixDesign.propagationInYears).toFixed(2) }} yrs</span>
-                        </td>
-                        <td class="py-3 px-6 text-right">
-                          <span class="text-sm font-medium">{{
-                            parseFloat(set.alternative.concreteMixDesign.serviceLifeInYears).toFixed(2) }} yrs</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <br><br>
-            <button class="btn-indigo-small ml-auto mobile-back-btn" @click="generateReport()">Print Report</button>
-          </section>
-        </vue-html2pdf>
-      </div>
-      <div>
+    <div class="overflow-scroll" style="text-align: -webkit-center; width:1px;height:1px">
+      <vue-html2pdf class="w-full" :show-layout="true" :float-layout="false" :filename="`Service Life Report`" :manual-pagination="true" :enable-download="true" ref="html2Pdf" pdf-format="a4">
         <section slot="pdf-content">
-          <div class="bg-white overflow-hidden" style="max-width:800px;margin:0 auto;">
+          <div class="bg-white overflow-hidden p-2">
             <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mb-2">
               <h3 class="font-semibold">Service Life Report</h3>
             </div>
             <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
-              <p class="font-semibold text-xs w-full lg:w-1/2">Project: {{ projectData.project.projectData.title }}</p>
-              <p class="font-semibold text-xs w-full lg:w-1/2">Description: {{ projectData.project.projectData.description
-              }}</p>
+              <p class="font-semibold text-xs w-1/2">Project: {{ projectData.project.projectData.title }}</p>
+              <p class="font-semibold text-xs w-1/2">Description: {{ projectData.project.projectData.description }}</p>
             </div>
             <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
-              <p class="font-semibold text-xs w-full lg:w-1/2">Analyst: {{ projectData.project.projectData.doneByName }}
-              </p>
-              <p class="font-semibold text-xs w-full lg:w-1/2">Date: {{ projectData.project.projectData.date }}</p>
+              <p class="font-semibold text-xs w-1/2">Analyst: {{ projectData.project.projectData.doneByName }}</p>
+              <p class="font-semibold text-xs w-1/2">Date: {{ projectData.project.projectData.date }}</p>
             </div>
             <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mt-2">
               <h3 class="font-semibold">Structure & Dimensions</h3>
             </div>
-            <div class="flex flex-wrap w-full mb-2">
-              <div id="figureCanvas" class="p-1 -mb-2 w-full lg:w-1/3">
-                <KonvaSLXSectionPlot :plotType="form.structure" :projectData="projectData.project.projectData"
-                  :key="keyKonvaSLXSectionPlot" :units="this.length_unit" :concUnits="concUnits" :maxConc="0"
-                  :allPoints="null" :thickness="parseFloat(form.trueThickness)" :clearCover="parseFloat(form.clearCover)"
-                  :iCurrentlyDisplayedMonth="0" :justSection="true"
-                  :style="{ background: 'whitesmoke', height: '100%', paddingTop: '10%' }" />
-                <div class="w-full lg:hidden mb-1">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">
-                    {{ form.structure }}
-                  </div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{
-                    form.trueThickness }} {{ length_unit }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover
-                  }} {{ length_unit }}</div>
-                </div>
+            <div class="flex flex-wrap w-full">
+              <div id="figureCanvas" class="p-1 -mb-2 w-1/3">
+                <KonvaSLXSectionPlot 
+                    :plotType="form.structure"
+                    :projectData="projectData.project.projectData"
+                    :key="keyKonvaSLXSectionPlot"
+                    :units="this.length_unit"
+                    :concUnits="concUnits"
+                    :maxConc="0"
+                    :allPoints="null"
+                    :thickness="parseFloat(form.trueThickness)"
+                    :clearCover="parseFloat(form.clearCover)"
+                    :iCurrentlyDisplayedMonth="0"
+                    :justSection="true"
+                    :style="{ background: 'whitesmoke', height: '100%',paddingTop:'10%' }"
+                />
               </div>
-
-              <div id="graphCanvas1" class="p-1 -mb-2 w-full lg:w-1/3">
-                <Chart class="chart1" :apRatio="1" :key="uuid1" type="line" :title="'Surface Concentration'"
-                  :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()"
-                  :datasets="createGraph1Y()" />
-
-                <div class="w-full lg:hidden mb-1">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Surface Concentration</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{
-                    form.maxSurfaceConcentration }} {{ concUnits }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{
-                    form.timeToBuildUp }} years</div>
-                </div>
+              <div id="graphCanvas1" class="p-1 -mb-2 w-1/3">
+                <Chart class="chart1" :apRatio="1" :key="uuid1" type="line" :title="'Surface Concentration'" :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()" :datasets="createGraph1Y()" />
               </div>
-              <div id="graphCanvas2" class="p-1 -mb-2 w-full lg:w-1/3">
-                <Chart class="chart2" :apRatio="1" :key="uuid2" type="line" :xLabel="'Month'"
-                  :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph"
-                  :labels="createGraph2X()" :datasets="createGraph2Y()" />
-
-                <div class="w-full lg:hidden mb-1">
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Monthly Temperatures</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{
-                    form.subLocation }}</div>
-                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{
-                    form.exposureType }}</div>
-                </div>
+              <div id="graphCanvas2" class="p-1 -mb-2 w-1/3">
+                <Chart class="chart2" :apRatio="1" :key="uuid2" type="line" :xLabel="'Month'" :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph" :labels="createGraph2X()" :datasets="createGraph2Y()" />
               </div>
             </div>
-            <div class="hidden lg:flex flex-wrap w-full">
-              <div class="w-full lg:w-1/3 ">
+            <div class="flex flex-wrap mt-2 w-full pt-1">
+              <div class="w-1/3">
                 <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">
                   {{ form.structure }}
                 </div>
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{
-                  form.trueThickness }} {{ length_unit }}</div>
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover }}
-                  {{ length_unit }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{ form.trueThickness }} {{ length_unit }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover }} {{ length_unit }}</div>
               </div>
-              <div class="w-full lg:w-1/3 ">
+              <div class="w-1/3">
                 <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Surface Concentration</div>
 
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{
-                  form.maxSurfaceConcentration }} {{ concUnits }}</div>
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{
-                  form.timeToBuildUp }} years</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{ form.maxSurfaceConcentration }} {{ concUnits }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{ form.timeToBuildUp }} years</div>
               </div>
-              <div class="w-full lg:w-1/3 ">
+              <div class="w-1/3">
                 <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Monthly Temperatures</div>
 
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{
-                  form.subLocation }}</div>
-                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{ form.exposureType
-                }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{ form.subLocation }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{ form.exposureType }}</div>
               </div>
             </div>
 
@@ -297,8 +95,7 @@
                     </tr>
                   </thead>
                   <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`"
-                      class="border-b border-gray-200 hover:bg-gray-100">
+                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`" class="border-b border-gray-200 hover:bg-gray-100">
                       <td class="py-3 px-6">
                         <span class="text-sm font-medium">{{ set.alternative.name }}</span>
                       </td>
@@ -315,8 +112,7 @@
                         <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.inhibitor }}</span>
                       </td>
                       <td class="py-3 px-6 text-center">
-                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.detailedBarrier.barrierName
-                        }}</span>
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.detailedBarrier.barrierName }}</span>
                       </td>
                       <td class="py-3 px-6 text-right">
                         <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.rebarType.type }}</span>
@@ -344,14 +140,12 @@
                     </tr>
                   </thead>
                   <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`"
-                      class="border-b border-gray-200 hover:bg-gray-100">
+                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`" class="border-b border-gray-200 hover:bg-gray-100">
                       <td class="py-3 px-6">
                         <span class="text-sm font-medium">{{ set.alternative.name }}</span>
                       </td>
                       <td class="py-3 px-6 whitespace-nowrap text-center">
-                        <span class="text-sm font-medium">{{
-                          parseFloat(set.alternative.concreteMixDesign.d28).toExponential(2) }}</span>
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.d28).toExponential(2) }}</span>
                       </td>
                       <td class="py-3 px-6 whitespace-nowrap text-center">
                         <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.m }}</span>
@@ -360,16 +154,13 @@
                         <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.ct }}</span>
                       </td>
                       <td class="py-3 px-6 text-center">
-                        <span class="text-sm font-medium">{{
-                          parseFloat(set.alternative.concreteMixDesign.initiationInYears).toFixed(2) }} yrs</span>
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.initiationInYears).toFixed(2) }} yrs</span>
                       </td>
                       <td class="py-3 px-6 text-center">
-                        <span class="text-sm font-medium">{{
-                          parseFloat(set.alternative.concreteMixDesign.propagationInYears).toFixed(2) }} yrs</span>
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.propagationInYears).toFixed(2) }} yrs</span>
                       </td>
                       <td class="py-3 px-6 text-right">
-                        <span class="text-sm font-medium">{{
-                          parseFloat(set.alternative.concreteMixDesign.serviceLifeInYears).toFixed(2) }} yrs</span>
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.serviceLifeInYears).toFixed(2) }} yrs</span>
                       </td>
                     </tr>
                   </tbody>
@@ -377,6 +168,189 @@
               </div>
             </div>
 
+            <!-- <div class="p-1 -mr-5 -mb-2 flex flex-wrap w-full html2pdf__page-break">
+              <Chart class="chart2 m-5" :key="uuid2" type="bar" :xLabel="'Alternatives'" :yLabel="`$`" title="Life Cycle Cost, by Alternative" :labels="createGraph2X()" :datasets="createGraph2Y()" />
+            </div> -->
+          </div>
+          <br><br>
+          <button class="btn-indigo-small ml-auto mobile-back-btn" @click="generateReport()">Print Report</button>
+        </section>
+      </vue-html2pdf>
+      </div>
+      <div>
+       <section slot="pdf-content">
+          <div class="bg-white overflow-hidden" style="max-width:800px;margin:0 auto;">
+            <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mb-2">
+              <h3 class="font-semibold">Service Life Report</h3>
+            </div>
+            <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
+              <p class="font-semibold text-xs w-full lg:w-1/2">Project: {{ projectData.project.projectData.title }}</p>
+              <p class="font-semibold text-xs w-full lg:w-1/2">Description: {{ projectData.project.projectData.description }}</p>
+            </div>
+            <div class="w-full border-b flex flex-nowrap items-left bg-gray-50 p-1">
+              <p class="font-semibold text-xs w-full lg:w-1/2">Analyst: {{ projectData.project.projectData.doneByName }}</p>
+              <p class="font-semibold text-xs w-full lg:w-1/2">Date: {{ projectData.project.projectData.date }}</p>
+            </div>
+            <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1 mt-2">
+              <h3 class="font-semibold">Structure & Dimensions</h3>
+            </div>
+            <div class="flex flex-wrap w-full mb-2">
+              <div id="figureCanvas" class="p-1 -mb-2 w-full lg:w-1/3">
+                <KonvaSLXSectionPlot 
+                    :plotType="form.structure"
+                    :projectData="projectData.project.projectData"
+                    :key="keyKonvaSLXSectionPlot"
+                    :units="this.length_unit"
+                    :concUnits="concUnits"
+                    :maxConc="0"
+                    :allPoints="null"
+                    :thickness="parseFloat(form.trueThickness)"
+                    :clearCover="parseFloat(form.clearCover)"
+                    :iCurrentlyDisplayedMonth="0"
+                    :justSection="true"
+                    :style="{ background: 'whitesmoke', height: '100%',paddingTop:'10%' }"
+                />
+                <div class="w-full lg:hidden mb-1">
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">
+                    {{ form.structure }}
+                  </div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{ form.trueThickness }} {{ length_unit }}</div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover }} {{ length_unit }}</div>
+                </div>
+              </div>
+              
+              <div id="graphCanvas1" class="p-1 -mb-2 w-full lg:w-1/3">
+                <Chart class="chart1" :apRatio="1" :key="uuid1" type="line" :title="'Surface Concentration'" :xLabel="'Year'" :yLabel="$page.props.concUnits" :labels="createGraph1X()" :datasets="createGraph1Y()" />
+                
+                <div class="w-full lg:hidden mb-1">
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Surface Concentration</div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{ form.maxSurfaceConcentration }} {{ concUnits }}</div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{ form.timeToBuildUp }} years</div>
+                </div>
+              </div>
+              <div id="graphCanvas2" class="p-1 -mb-2 w-full lg:w-1/3">
+                <Chart class="chart2" :apRatio="1" :key="uuid2" type="line" :xLabel="'Month'" :yLabel="`Temperature (${temperature_unit})`" title="Temperature vs Calendar Month Graph" :labels="createGraph2X()" :datasets="createGraph2Y()" />
+                
+                <div class="w-full lg:hidden mb-1">
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Monthly Temperatures</div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{ form.subLocation }}</div>
+                  <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{ form.exposureType }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="hidden lg:flex flex-wrap w-full">
+              <div class="w-full lg:w-1/3 ">
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">
+                  {{ form.structure }}
+                </div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Outer Dimension : {{ form.trueThickness }} {{ length_unit }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Clear Cover : {{ form.clearCover }} {{ length_unit }}</div>
+              </div>
+              <div class="w-full lg:w-1/3 ">
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Surface Concentration</div>
+
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Max Surface Concentration: {{ form.maxSurfaceConcentration }} {{ concUnits }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Time to buildup : {{ form.timeToBuildUp }} years</div>
+              </div>
+              <div class="w-full lg:w-1/3 ">
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Monthly Temperatures</div>
+
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Location : {{ form.location }}, {{ form.subLocation }}</div>
+                <div class="w-full bg-gray-50 p-1 text-xs" style="text-align: center">Exposure Type : {{ form.exposureType }}</div>
+              </div>
+            </div>
+
+            <div class="w-full border-b flex flex-nowrap items-center bg-gray-50 p-1">
+              <h3 class="font-semibold">Concrete Mixes</h3>
+            </div>
+            <div v-if="visibleGraph == 'life-cycle-cost'" class="text-sm flex w-full flex-wrap">
+              <div class="overflow-x-auto w-full">
+                <table class="w-full whitespace-nowrap text-left">
+                  <thead>
+                    <tr class="bg-gray-200 text-gray-600 text-sm leading-normal">
+                      <th class="py-3 px-6">Name</th>
+                      <th class="py-3 px-6 text-center">User?</th>
+                      <th class="py-3 px-6 text-center">w/cm</th>
+                      <th class="py-3 px-6 text-center">SCMs</th>
+                      <th class="py-3 px-6 text-center">Inhib.</th>
+                      <th class="py-3 px-6 text-center">Barrier</th>
+                      <th class="py-3 px-6 text-right">Reinf.</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gray-600 text-sm font-light">
+                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`" class="border-b border-gray-200 hover:bg-gray-100">
+                      <td class="py-3 px-6">
+                        <span class="text-sm font-medium">{{ set.alternative.name }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.userDefinedMixCost ? 'Yes' : 'No' }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.waterCementRatio }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium"></span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.inhibitor }}</span>
+                      </td>
+                      <td class="py-3 px-6 text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.detailedBarrier.barrierName }}</span>
+                      </td>
+                      <td class="py-3 px-6 text-right">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.rebarType.type }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="mt-5 w-full border-b flex flex-nowrap items-center bg-gray-50 p-1">
+              <h3 class="font-semibold">Diffusion Properties & Service Lives</h3>
+            </div>
+            <div v-if="visibleGraph == 'life-cycle-cost'" class="text-sm flex w-full flex-wrap">
+              <div class="overflow-x-auto w-full">
+                <table class="w-full whitespace-nowrap text-left">
+                  <thead>
+                    <tr class="bg-gray-200 text-gray-600 text-sm leading-normal">
+                      <th class="py-3 px-6">Name</th>
+                      <th class="py-3 px-6 text-center">D28</th>
+                      <th class="py-3 px-6 text-center">m</th>
+                      <th class="py-3 px-6 text-center">Ct ({{ concUnits }})</th>
+                      <th class="py-3 px-6 text-center">Init.</th>
+                      <th class="py-3 px-6 text-center">Prop.</th>
+                      <th class="py-3 px-6 text-right">Service Life</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gray-600 text-sm font-light">
+                    <tr v-for="(set, index) in alternatives" :key="index" :style="`color: ${altColors[index]}`" class="border-b border-gray-200 hover:bg-gray-100">
+                      <td class="py-3 px-6">
+                        <span class="text-sm font-medium">{{ set.alternative.name }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.d28).toExponential(2) }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.m }}</span>
+                      </td>
+                      <td class="py-3 px-6 whitespace-nowrap text-center">
+                        <span class="text-sm font-medium">{{ set.alternative.concreteMixDesign.ct }}</span>
+                      </td>
+                      <td class="py-3 px-6 text-center">
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.initiationInYears).toFixed(2) }} yrs</span>
+                      </td>
+                      <td class="py-3 px-6 text-center">
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.propagationInYears).toFixed(2) }} yrs</span>
+                      </td>
+                      <td class="py-3 px-6 text-right">
+                        <span class="text-sm font-medium">{{ parseFloat(set.alternative.concreteMixDesign.serviceLifeInYears).toFixed(2) }} yrs</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
             <!-- <div class="p-1 -mr-5 -mb-2 flex flex-wrap w-full html2pdf__page-break">
               <Chart class="chart2 m-5" :key="uuid2" type="bar" :xLabel="'Alternatives'" :yLabel="`$`" title="Life Cycle Cost, by Alternative" :labels="createGraph2X()" :datasets="createGraph2Y()" />
             </div> -->
@@ -436,18 +410,17 @@ export default {
     temperatureEntries: [Object, Array],
   },
   computed: {},
-  created() { },
+  created() {},
   mounted() {
-
     const container = document.querySelector('#figureCanvas')
     this.configKonva.width = container.offsetWidth
     this.configKonva.height = container.offsetHeight
     this.getRedefinedUnits(this.baseUnits)
     EventBus.$on("navigateApplicationTo", (data) => {
       // window.location.replace(window.location.origin +'/'+ data);
-      if (Array.isArray(data)) {
-        this.$inertia.visit(this.route(data[0], data[1]), { method: 'get' })
-      } else {
+      if(Array.isArray(data)){
+        this.$inertia.visit(this.route(data[0],data[1]), { method: 'get' })
+      }else{
         this.$inertia.visit(this.route(data), { method: 'get' })
       }
     });
@@ -508,7 +481,7 @@ export default {
       length_unit: null,
       temperature_unit: null,
 
-      keyKonvaSLXSectionPlot: null,
+      keyKonvaSLXSectionPlot:null,
 
       calendarMonths: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       yearsLabels: [0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300],
@@ -716,7 +689,6 @@ export default {
 #graphCanvas1 {
   align-content: center;
 }
-
 .chart1 {
   background-color: #f5f5f5;
   padding: 10px;
@@ -726,7 +698,6 @@ export default {
   background-color: #f5f5f5;
   padding: 10px;
 }
-
 .topnav {
   overflow: hidden;
   background-color: #333;
@@ -760,7 +731,6 @@ export default {
   .topnav a:not(:first-child) {
     display: none;
   }
-
   .topnav a.icon {
     float: right;
     display: block;
@@ -771,13 +741,11 @@ export default {
   .topnav.responsive {
     position: relative;
   }
-
   .topnav.responsive .icon {
     position: absolute;
     right: 0;
     top: 0;
   }
-
   .topnav.responsive a {
     float: none;
     display: block;

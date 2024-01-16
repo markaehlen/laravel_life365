@@ -1,4 +1,3 @@
-<!-- The top navagation panel, including mobile phone 'hamburger' and login details -->
 <template>
   <div class="sticky top-0 z-40">
     <div class="w-full h-20 px-5 bg-gradient-to-r from-gray-200 to-indigo-400 flex items-center justify-between">
@@ -6,8 +5,7 @@
       <div class="flex">
         <!-- mobile hamburger -->
         <div class="inline-block lg:hidden flex items-center mr-4">
-          <button class="hover:text-blue-500 hover:border-white focus:outline-none navbar-burger"
-            @click="toggleSidebar()">
+          <button class="hover:text-blue-500 hover:border-white focus:outline-none navbar-burger" @click="toggleSidebar()">
             <svg class="h-5 w-5" :style="{ fill: 'white' }" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <title>Menu</title>
               <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
@@ -16,7 +14,6 @@
         </div>
         <!-- search bar -->
         <div class="relative text-gray-600">
-          <!--Life-365 has no search bar-->
           <!-- <input type="search" name="serch" placeholder="Search..." class="bg-white h-10 w-full xl:w-64 px-5 rounded-lg border text-sm focus:outline-none" />
           <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
             <svg id="Capa_1" class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;" xml:space="preserve" width="512px" height="512px">
@@ -27,22 +24,18 @@
       </div>
       <!-- right navbar -->
       <div class="flex items-center relative">
-        <!-- dropdown menu for creating/logging into personal account-->
+        <!-- dropdown menu -->
         <dropdown class="mt-1" placement="bottom-end">
           <div class="flex items-center cursor-pointer select-none group">
             <div class="text-white mr-1 whitespace-nowrap">
-              <span class="md:inline navbar-user-text">{{ $page.props.auth.user.first_name }} {{
-                $page.props.auth.user.last_name }}</span>
+              <span class="md:inline navbar-user-text">{{ $page.props.auth.user.first_name }} {{ $page.props.auth.user.last_name }}</span>
             </div>
             <icon class="w-5 h-5 group-hover:fill-white fill-white focus:fill-white" name="cheveron-down" />
           </div>
           <div slot="dropdown" class="mt-3 py-3 shadow-xl bg-white text-sm">
-            <inertia-link class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700" :href="route('admin.profile')">My
-              Profile</inertia-link>
-            <inertia-link class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700"
-              :href="route('admin.password')">Change Password</inertia-link>
-            <a class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700 w-full text-left"
-              :href="route('admin.logout')" as="button">Logout</a>
+            <inertia-link class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700" :href="route('admin.profile')">My Profile</inertia-link>
+            <inertia-link class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700" :href="route('admin.password')">Change Password</inertia-link>
+            <a class="block px-6 py-2 hover:bg-gray-200 hover:text-gray-700 w-full text-left" :href="route('admin.logout')" as="button">Logout</a>
           </div>
         </dropdown>
         <!-- dropdown menu end -->
